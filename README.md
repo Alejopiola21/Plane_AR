@@ -4,6 +4,12 @@
 
 PlaneAR es una plataforma web SaaS de organización de eventos sociales diseñada para simplificar el proceso de invitación, confirmación de asistencia (RSVP), control de invitados, estadísticas de eventos e integración de pagos online.
 
+## Vista Previa (Screenshots)
+
+| Landing Page | Dashboard & Gestión |
+| :---: | :---: |
+| ![Landing Page](public/image.png) | ![Dashboard](public/image%20copy.png) |
+
 ---
 
 ## Características Principales
