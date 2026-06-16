@@ -1,0 +1,86 @@
+datasource db {
+  provider = "sqlite"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String?
+  role          String    @default("USER") // "USER" or "ADMIN"
+  active        Boolean   @default(true)
+  events        Event[]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Event {
+  id          String       @id @default(uuid())
+  name        String
+  description String?
+  date        String       // YYYY-MM-DD
+  time        String       // HH:MM
+  location    String
+  coverImage  String?
+  maxCapacity Int
+  status      String       @default("ACTIVE") // "ACTIVE", "FINISHED", "CANCELLED"
+  userId      String
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  guests      Guest[]
+  invitations Invitation[]
+  payments    Payment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Guest {
+  id         String     @id @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  eventId    String
+  event      Event      @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  status     String     @default("PENDING") // "PENDING", "CONFIRMED", "REJECTED"
+  numGuests  Int        @default(0)
+  rsvp       RSVP?
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+
+  @@unique([eventId, email])
+}
+
+model Invitation {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model RSVP {
+  id           String   @id @default(uuid())
+  guestId      String   @unique
+  guest        Guest    @relation(fields: [guestId], references: [id], onDelete: Cascade)
+  status       String   // "CONFIRMED", "REJECTED"
+  numGuests    Int      @default(0)
+  responseDate DateTime @default(now())
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  eventId        String
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  amount         Float
+  status         String   // "PENDING", "APPROVED", "REJECTED"
+  mpPreferenceId String?
+  mpPaymentId    String?
+  guestEmail     String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
